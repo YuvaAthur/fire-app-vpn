@@ -3,6 +3,8 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 24
     buildToolsVersion "28.0.3"
+    //http://android-ed.blogspot.com/2015/07/change-apk-file-name-in-gradle.html
+    project.archivesBaseName = "LocalVPN"
 
     defaultConfig {
         applicationId "xyz.fireapp.localvpn"
@@ -11,11 +13,18 @@ android {
         versionCode 1
         versionName "1.0"
     }
+
     buildTypes {
+
+
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+        debug {
+            testCoverageEnabled = true
+        }
+
     }
 }
 
