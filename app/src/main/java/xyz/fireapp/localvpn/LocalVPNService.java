@@ -38,7 +38,7 @@ import java.util.concurrent.Executors;
 public class LocalVPNService extends VpnService
 {
     private static final String TAG = LocalVPNService.class.getSimpleName();
-    private static final String VPN_ADDRESS = "10.0.0.2"; // Only IPv4 support for now
+    private static final String VPN_ADDRESS = "192.168.0.103"; // Only IPv4 support for now
     private static final String VPN_ROUTE = "0.0.0.0"; // Intercept everything
 
     public static final String BROADCAST_VPN_STATE = "xyz.fireapp.localvpn.VPN_STATE";
@@ -79,13 +79,13 @@ public class LocalVPNService extends VpnService
             executorService.submit(new VPNRunnable(vpnInterface.getFileDescriptor(),
                     deviceToNetworkUDPQueue, deviceToNetworkTCPQueue, networkToDeviceQueue));
             LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(BROADCAST_VPN_STATE).putExtra("running", true));
-            Log.i(TAG, "Started");
+            Log.i(TAG, "Local VPN service: Ready to start");
         }
         catch (IOException e)
         {
             // TODO: Here and elsewhere, we should explicitly notify the user of any errors
             // and suggest that they stop the service, since we can't do it ourselves
-            Log.e(TAG, "Error starting service", e);
+            Log.e(TAG, "Local VPN service: Error starting service", e);
             cleanup();
         }
     }
@@ -119,7 +119,7 @@ public class LocalVPNService extends VpnService
         isRunning = false;
         executorService.shutdownNow();
         cleanup();
-        Log.i(TAG, "Stopped");
+        Log.i(TAG, "Local VPN service: Stopped");
     }
 
     private void cleanup()
@@ -171,7 +171,7 @@ public class LocalVPNService extends VpnService
         @Override
         public void run()
         {
-            Log.i(TAG, "Started");
+            Log.i(TAG, "Local VPN service:Starting");
 
             FileChannel vpnInput = new FileInputStream(vpnFileDescriptor).getChannel();
             FileChannel vpnOutput = new FileOutputStream(vpnFileDescriptor).getChannel();
@@ -195,6 +195,7 @@ public class LocalVPNService extends VpnService
                         dataSent = true;
                         bufferToNetwork.flip();
                         Packet packet = new Packet(bufferToNetwork);
+                        Log.w(TAG, packet.ip4Header.toString()); // DBG: to see what is in the packet!
                         if (packet.isUDP())
                         {
                             deviceToNetworkUDPQueue.offer(packet);
@@ -238,7 +239,7 @@ public class LocalVPNService extends VpnService
             }
             catch (InterruptedException e)
             {
-                Log.i(TAG, "Stopping");
+                Log.i(TAG, "Local VPN service:Stopping");
             }
             catch (IOException e)
             {
