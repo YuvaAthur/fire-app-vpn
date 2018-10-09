@@ -38,7 +38,7 @@ import java.util.concurrent.Executors;
 public class LocalVPNService extends VpnService
 {
     private static final String TAG = LocalVPNService.class.getSimpleName();
-    private static final String VPN_ADDRESS = "192.168.0.103"; // Only IPv4 support for now
+    private static final String VPN_ADDRESS = "10.0.0.2"; //"192.168.0.103"; // Only IPv4 support for now
     private static final String VPN_ROUTE = "0.0.0.0"; // Intercept everything
 
     public static final String BROADCAST_VPN_STATE = "xyz.fireapp.localvpn.VPN_STATE";
